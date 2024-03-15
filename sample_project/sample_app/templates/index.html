@@ -15,52 +15,9 @@
 <div id="map"></div>
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-<script>
-    // Load the GeoJSON data from layers.json
-fetch('layers.json')
-    .then(response => response.json())
-    .then(data => {
-        // Initialize the Leaflet map
-        var map = L.map('map').setView([31.1399, 29.9753], 5);
 
-        // Add a base map layer (optional)
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; OpenStreetMap contributors'
-        }).addTo(map);
-
-        // Define a function to style each feature
-        function style(feature) {
-            return {
-                fillColor: 'green',
-                weight: 2,
-                opacity: 1,
-                color: 'white',
-                fillOpacity: 0.7
-            };
-        }
-
-        // Define a function to handle click events on GeoJSON features
-        function onEachFeature(feature, layer) {
-            layer.on('click', function(event) {
-                // Create and open a popup with feature data
-                var popup = L.popup()
-                    .setLatLng(event.latlng)
-                    .setContent(JSON.stringify(feature.properties))
-                    .openOn(map);
-            });
-        }
-
-        // Add GeoJSON features to the map with onclick events
-        L.geoJSON(data, {
-            style: style,
-            onEachFeature: onEachFeature
-        }).addTo(map);
-    })
-    .catch(error => console.error('Error loading GeoJSON:', error));
-
-</script> 
-<!-- <script src="../static/manualLayers.js"></script>
-<script src="../static/js/imageOverlay.js"></script> -->
+<script src="../static/manualLayers.js"></script>
+<!-- <script src="../static/js/imageOverlay.js"></script> -->
 
 </body>
 </html>
