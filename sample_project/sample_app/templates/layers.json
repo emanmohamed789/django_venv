@@ -1,0 +1,32 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {"type": "Point", "coordinates": [31.1343, 29.9792]},
+      "properties": {"name": "Great Pyramid of Giza", "type": "Pyramid"}
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [31.1399, 29.9753], [31.1411, 29.9768], [31.1401, 29.9784], [31.1389, 29.9779], [31.1399, 29.9753]
+        ]
+      },
+      "properties": {"name": "Nile River", "type": "River"}
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [31.1344, 29.9792], [31.1349, 29.9789], [31.1349, 29.9785], [31.1344, 29.9785], [31.1344, 29.9792]
+          ]
+        ]
+      },
+      "properties": {"name": "Giza Plateau", "type": "Plateau"}
+    }
+  ]
+}
