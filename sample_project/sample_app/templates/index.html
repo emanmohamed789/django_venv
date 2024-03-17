@@ -6,61 +6,193 @@
   <title>Leaflet Map with Vector Layers</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <style>
-    #map { block-size: 100vh; }
-    body, html { margin: 0; padding: 5; }
+    #map { 
+      block-size: 100vh;
+      position: relative;
+    }
+
+    body, html { 
+      margin: 0; 
+      padding: 5; 
+    }
+
+    #layerControls {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background-color: rgba(255, 255, 255, 0.7);
+      padding: 5px;
+      border-radius: 5px;
+    }
+
+    .checkbox-label {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 14px;
+      color: #333;
+    }
+
+    .checkbox-container {
+      display: flex;
+      align-items: center;
+    }
+
+    .checkbox-custom {
+      position: relative;
+      margin-right: 5px;
+      cursor: pointer;
+    }
+
+    .checkbox-custom input {
+      position: absolute;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .checkmark {
+      position: relative;
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      background-color: #eee;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+    }
+
+    .checkmark:after {
+      content: "";
+      position: absolute;
+      display: none;
+    }
+
+    .checkbox-custom input:checked ~ .checkmark:after {
+      display: block;
+    }
+
+    .checkmark:after {
+      left: 6px;
+      top: 2px;
+      width: 5px;
+      height: 10px;
+      border: solid #333;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+    }
   </style>
 </head>
 <body>
 
-<div id="map"></div>
+<div id="map">
+  <div id="layerControls">
+    <label class="checkbox-label">
+      <div class="checkbox-container">
+        <input type="checkbox" id="cairoCheckbox" class="checkbox-custom" checked>
+        <div class="checkmark"></div>
+        Cairo Point
+      </div>
+    </label>
+    <label class="checkbox-label">
+      <div class="checkbox-container">
+        <input type="checkbox" id="alexandriaCheckbox" class="checkbox-custom" checked>
+        <div class="checkmark"></div>
+        Alexandria Line
+      </div>
+    </label>
+    <label class="checkbox-label">
+      <div class="checkbox-container">
+        <input type="checkbox" id="aswanCheckbox" class="checkbox-custom" checked>
+        <div class="checkmark"></div>
+        Aswan Polygon
+      </div>
+    </label>
+  </div>
+</div>
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
 <script>
-    // Load the GeoJSON data from layers.json
-fetch('layers.json')
-    .then(response => response.json())
-    .then(data => {
-        // Initialize the Leaflet map
-        var map = L.map('map').setView([31.1399, 29.9753], 5);
+  var map = L.map('map').setView([29.9773, 31.1325], 15); // Centered on the Pyramids of Giza
 
-        // Add a base map layer (optional)
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; OpenStreetMap contributors'
-        }).addTo(map);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
 
-        // Define a function to style each feature
-        function style(feature) {
-            return {
-                fillColor: 'green',
-                weight: 2,
-                opacity: 1,
-                color: 'white',
-                fillOpacity: 0.7
-            };
-        }
+  var cairoPoint = {
+    type: "Feature",
+    properties: {},
+    geometry: {
+      type: "Point",
+      coordinates: [31.2357, 30.0444]
+    }
+  };
 
-        // Define a function to handle click events on GeoJSON features
-        function onEachFeature(feature, layer) {
-            layer.on('click', function(event) {
-                // Create and open a popup with feature data
-                var popup = L.popup()
-                    .setLatLng(event.latlng)
-                    .setContent(JSON.stringify(feature.properties))
-                    .openOn(map);
-            });
-        }
+  var alexandriaLine = {
+    type: "Feature",
+    properties: {},
+    geometry: {
+      type: "LineString",
+      coordinates: [
+        [29.9511, 31.2001],
+        [31.2357, 30.0444]
+      ]
+    }
+  };
 
-        // Add GeoJSON features to the map with onclick events
-        L.geoJSON(data, {
-            style: style,
-            onEachFeature: onEachFeature
-        }).addTo(map);
-    })
-    .catch(error => console.error('Error loading GeoJSON:', error));
+  var aswanPolygon = {
+    type: "Feature",
+    properties: {},
+    geometry: {
+      type: "Polygon",
+      coordinates: [
+        [
+          [32.8908, 24.0889],
+          [32.8765, 24.0123],
+          [32.6443, 24.0790],
+          [32.6539, 24.1926],
+          [32.8908, 24.0889]
+        ]
+      ]
+    }
+  };
 
-</script> 
-<!-- <script src="../static/manualLayers.js"></script>
-<script src="../static/js/imageOverlay.js"></script> -->
+  var pointLayer = L.geoJSON(cairoPoint, {style: {color: 'red', fillColor: 'red', fillOpacity: 0.8}});
+  var lineLayer = L.geoJSON(alexandriaLine, {style: {color: 'blue', weight: 3}});
+  var polygonLayer = L.geoJSON(aswanPolygon, {style: {color: 'green', fillColor: 'green', fillOpacity: 0.5}});
+
+  var layerControls = document.getElementById('layerControls');
+
+  function toggleLayer(checkbox, layer) {
+    if (checkbox.checked) {
+      layer.addTo(map);
+    } else {
+      map.removeLayer(layer);
+    }
+  }
+
+  document.getElementById('cairoCheckbox').addEventListener('change', function() {
+    toggleLayer(this, pointLayer);
+  });
+
+  document.getElementById('alexandriaCheckbox').addEventListener('change', function() {
+    toggleLayer(this, lineLayer);
+  });
+
+  document.getElementById('aswanCheckbox').addEventListener('change', function() {
+    toggleLayer(this, polygonLayer);
+  });
+  var overlayMaps = {
+    "Cairo Point": pointLayer,
+    "Alexandria Line": lineLayer,
+    "Aswan Polygon": polygonLayer
+  };
+
+  L.control.layers(null, overlayMaps).addTo(map);
+  // Initially add all layers to the map
+  pointLayer.addTo(map);
+  lineLayer.addTo(map);
+  polygonLayer.addTo(map);
+
+</script>
 
 </body>
 </html>
